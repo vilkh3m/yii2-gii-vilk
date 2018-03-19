@@ -23,11 +23,9 @@ use <?= $generator->indexWidgetType === 'grid' ? "kartik\\grid\\GridView" : "kar
 $this->title = <?= $generator->generateString(StringHelper::basename($generator->modelClass)) ?>;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-index box box-primary">
+<div class="<?= Inflector::camel2id(StringHelper::basename($generator->modelClass)) ?>-index">
 <?= $generator->enablePjax ? "    <?php Pjax::begin(); ?>\n" : ''
-?>    <div class="box-header with-border">
-        <?= '<?php if (Yii::$app->user->can(\'/\' . Yii::$app->controller->id . \'/create\'))'."\n\t\t\techo " ?>Html::a(<?= $generator->generateString('Create') ?>, ['create'], ['class' => 'btn btn-success btn-flat']); ?>
-    </div>
+?>
     <div class="box-body table-responsive no-padding">
 <?php if(!empty($generator->searchModelClass)): ?>
 <?= "        <?php " . ($generator->indexWidgetType === 'grid' ? "// " : "") ?>echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -96,6 +94,7 @@ if ($generator->indexWidgetType === 'grid'):
     echo "        <?= " ?>GridView::widget([
             'exportConfig' => $defaultExportConfig,
             'dataProvider' => $dataProvider,
+            'floatHeader' => true,
             <?= !empty($generator->searchModelClass) ? "'filterModel' => \$searchModel,\n\t\t\t'rowOptions' => function (\$model) {\n\t\t\t\tif (\$model->status == 0) {\n\t\t\t\t\treturn ['class' => 'danger'];\n\t\t\t\t}\n\t\t\t\treturn null;\n\t\t\t},\n\t\t\t'layout' => \"{items}\\n{summary}\\n{pager}\",\n\t\t\t'columns' => [\n" : "'layout' => \"{items}\\n{summary}\\n{pager}\",\n\t\t\t'columns' => [\n"; ?>
                 ['class' => 'kartik\grid\SerialColumn'],
 
@@ -145,7 +144,7 @@ if (($tableSchema = $generator->getTableSchema()) === false) {
                             }
                         }
                     ],
-                    'urlCreator' => function ($action, $model, $key, $index) {
+                    'urlCreator' => function ($action, $model) {
                         if ($action === 'view') {
                             return \yii\helpers\Url::to([Yii::$app->controller->id . '/view', 'id' => $model->id]);
                         }
@@ -166,7 +165,12 @@ if (($tableSchema = $generator->getTableSchema()) === false) {
             ],
             'panel' => [
                 'type' => 'primary',
-            ],
+                'heading' => $this->title,
+                'before' =>  (Yii::$app->user->can('/' . Yii::$app->controller->id . '/create')) ?
+                    Html::a('<i class="glyphicon glyphicon-plus"></i> '.<?= $generator->generateString('Create') ?>, ['create'], ['class' => 'btn btn-success']) : null,
+                'after'=>Html::a('<i class="glyphicon glyphicon-repeat"></i> Reset filtrów', ['index'], ['class' => 'btn btn-info']),
+                'footer'=>false
+            ]
         ]); ?>
 <?php else: ?>
         <?= "<?= " ?>ListView::widget([
