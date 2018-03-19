@@ -97,7 +97,6 @@ if ($generator->indexWidgetType === 'grid'):
             'floatHeader' => true,
             <?= !empty($generator->searchModelClass) ? "'filterModel' => \$searchModel,\n\t\t\t'rowOptions' => function (\$model) {\n\t\t\t\tif (\$model->status == 0) {\n\t\t\t\t\treturn ['class' => 'danger'];\n\t\t\t\t}\n\t\t\t\treturn null;\n\t\t\t},\n\t\t\t'layout' => \"{items}\\n{summary}\\n{pager}\",\n\t\t\t'columns' => [\n" : "'layout' => \"{items}\\n{summary}\\n{pager}\",\n\t\t\t'columns' => [\n"; ?>
                 ['class' => 'kartik\grid\SerialColumn'],
-
 <?php
 $count = 0;
 if (($tableSchema = $generator->getTableSchema()) === false) {
@@ -119,6 +118,13 @@ if (($tableSchema = $generator->getTableSchema()) === false) {
     }
 }
 ?>
+                [
+                    'attribute' => 'status',
+                    'value' => function ($data) {
+                        return $data->status == 1 ? <?= $generator->generateString('Aktywne') ?> : <?= $generator->generateString('Nieaktywne') ?>;
+                    },
+                    'filter' => ['1' => <?= $generator->generateString('Aktywne') ?>, '0' => <?= $generator->generateString('Nieaktywne') ?>],
+                ],
                 [
                     'class' => 'kartik\grid\ActionColumn',
                     'buttons' => [

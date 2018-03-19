@@ -59,7 +59,18 @@ class <?= $className ?> extends <?= '\\' . ltrim($generator->baseClass, '\\') . 
      */
     public function rules()
     {
-        return [<?= empty($rules) ? '' : ("\n            " . implode(",\n            ", $rules) . ",\n        ") ?>];
+        return [<?= empty($rules) ? '' : ("\n            " . implode(",\n            ", $rules) . ",\n        ") ?>
+    [['status'], 'required', 'on' => 'zmianastatusu'],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function scenarios() {
+        $scenarios = parent::scenarios();
+        $scenarios['zmianastatusu'] = ['status'];
+        return $scenarios;
     }
 
     /**
